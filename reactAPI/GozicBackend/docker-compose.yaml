@@ -1,0 +1,54 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    environment:
+      - DB_CONNECTION=mongodb
+      - DB_HOST=mongo
+      - DB_PORT=27017
+      - DB_DATABASE=Gozic
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+
+  webserver:
+    image: nginx:alpine
+    container_name: nginx_server
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - app-network
+    depends_on:
+      - app
+
+  mongo:
+    image: mongo:8.0.8
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=Gozic
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
