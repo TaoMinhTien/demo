@@ -11,12 +11,10 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setError('');
         try {
             const result = await postAPI({
@@ -24,6 +22,10 @@ const LoginPage = () => {
                 data: { email, password },
             });
             if (result.token) {
+                if (!['admin', 'user'].includes(result.user.role)) {
+                    setError('Tài khoản của bạn không có quyền truy cập');
+                    return;
+                }
                 await login(result.token, {
                     id: result.user.id,
                     email: result.user.email,
@@ -35,21 +37,19 @@ const LoginPage = () => {
                 if (result.user.role === 'admin') {
                     navigate("/AdminDashboard");
                 } else {
-                    navigate("/profile");
+                    navigate("/UserDashboard");
                 }
             } else {
-                setError('Login failed. Please try again.');
+                setError('Đăng nhập thất bại. Vui lòng thử lại.');
             }
         } catch (err) {
             console.log('error', err);
-            setError(err.message || 'Something went wrong');
-        } finally {
-            setLoading(false);
+            setError(err.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
         }
     };
 
     const handleRegisterRedirect = () => {
-        navigate('/register'); 
+        navigate('/register');
     };
 
     return (
@@ -78,6 +78,7 @@ const LoginPage = () => {
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium"
                     />
+                    {error && <div className="text-red-500 text-sm mt-2 text-center">{error}</div>}
                     <div className="mt-4 text-center">
                         <p className="text-sm text-gray-600">
                             Don't have an account?{' '}

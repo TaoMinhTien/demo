@@ -5,6 +5,8 @@ import AdminDashboard from './auth/AdminDashboard';
 import UpdateUserPage from './auth/AdminUpdateUsers';
 import DeleteUsers from './auth/AdminDeleteUsers';
 import Register from './auth/Register';
+import PrivateRoute from '@/components/PrivateRoute/PrivateRoute';
+import UsersDashboard from '@/pages/Users/UsersDashboard';
 
 const Welcome = () => {
   return (
@@ -12,7 +14,15 @@ const Welcome = () => {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<LoginPage />} />
-          <Route path="/AdminDashboard" element={<AdminDashboard />} />
+          <Route
+            path="/AdminDashboard"
+            element={
+              <PrivateRoute roleRequired="admin">
+                <AdminDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/UserDashboard" element={<UsersDashboard />} />
           <Route path="/update/:id" element={<UpdateUserPage />} />
           <Route path="/delete/:id" element={<DeleteUsers />} />
           <Route path="/register" element={<Register />} /> 

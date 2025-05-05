@@ -51,11 +51,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('authToken', token);
     localStorage.setItem('userData', JSON.stringify(userData));
     setUser(userData);
-    // if (userData.role === 'admin') {
-    //      router('/AdminDashboard');
-    //  } else {
-    //      router('/user-profile');
-    //  }
   };
 
   const logout = () => {
@@ -68,7 +63,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider value={{ 
       user, 
-      setUser,
       login, 
       logout, 
       isAuthenticated: !!user && !loading,

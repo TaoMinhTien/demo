@@ -1,7 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -23,6 +24,17 @@ return new class extends Migration
             $collection->rememberToken();
             $collection->timestamps();
         });
+
+        DB::connection('mongodb')->table('users')->insert([
+            'name' => 'admin',
+            'email' => 'admin@gmail.com',
+            'phone' => '0123456789',
+            'address' => 'Admin Address',
+            'password' => Hash::make('123123'),
+            'role' => 'admin',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         Schema::connection('mongodb')->create('password_reset_tokens', function ($collection) {
             $collection->string('email')->primary();
